@@ -1,10 +1,11 @@
 /*
 This program is created by Andrej Klochan
 The program is controling the process of light bulb switching on and off, moreover, the charging of the battery is controlled by this program
-The last update of this program: 26.12.2018
+The last update of this program: 27.12.2018
 The last changes made in this program: recharging battery condition, if the battery is not fully charged after 2.5 hours.
 This changes are made in void charging() function
 Add void checkRelayStuck() function - checks, whether relay is not stuck after charging.
+Add system_sleep() in loop function
 */
 
 #include <avr/wdt.h>
@@ -101,6 +102,7 @@ void loop()
             charging();
             checkRelayStuck();
             counter = 0;
+            system_sleep(); //27.12.2018 update
                           }
       else 
          {
@@ -155,7 +157,7 @@ else {
   bcounter++;
   }
 
-if(charged == true && battery <= 820 && bcounter >=1) {
+if(charged == true && battery <= 820 && bcounter == 1) {
   charged = false;
   digitalWrite(baterka, HIGH);
   bcounter = 6;

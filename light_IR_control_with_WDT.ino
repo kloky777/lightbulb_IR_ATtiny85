@@ -2,7 +2,8 @@
 This program is created by Andrej Klochan
 The program is controling the process of light bulb switching on and off, moreover, the charging of the battery is controlled by this program
 The last update of this program: 29.1.2019
-Decreased level of battery voltage in the program
+Added debug function
+Changed battery charging conditions
 The last changes made in this program: recharging battery condition, if the battery is not fully charged after 2.5 hours.
 This changes are made in void charging() function
 Add void checkRelayStuck() function - checks, whether relay is not stuck after charging.
@@ -36,6 +37,7 @@ IRrecv irrecv(RECV_PIN);
 decode_results results;
 #define UP  0xFF629D
 #define DOWN 0xFFA857
+#define NINE 0xFF5AA5
 
 
 void setup(){
@@ -82,6 +84,8 @@ void loop()
                delay(5000);
                digitalWrite(baterka, LOW);
                break;
+               case NINE:
+               debug();
                       }
            irrecv.resume();
                              }
@@ -134,7 +138,7 @@ void charging()    //This part of program runs every 15minues
 //------------------------------------------------------
  int pin_baterka = digitalRead(0);
  int battery = analogRead(A2);
- if (battery <=600)  // If the battery has lower output voltage than 3V, starts charging
+ if (battery <=645)  // If the battery has lower output voltage than 3V, starts charging
 {
 digitalWrite(baterka,HIGH);        // So the charging relay is switched on
 bcounter=0;                        // And the bcounter is reseted
@@ -158,7 +162,7 @@ else {
   bcounter++;
   }
 
-if(charged == true && battery <= 780 && bcounter == 1) {
+if(charged == true && battery <= 810 && bcounter == 1) {
   charged = false;
   digitalWrite(baterka, HIGH);
   bcounter = 6;
@@ -175,7 +179,7 @@ void checkRelayStuck() {
   
   int pin_baterka = digitalRead(0);
   int battery = analogRead(A2);
-  if (battery>=810 && pin_baterka==LOW)    // This condition is fulfilled, if the charging relay is stuck, it means that AC charger charges the battery for a long time
+  if (battery>=840 && pin_baterka==LOW)    // This condition is fulfilled, if the charging relay is stuck, it means that AC charger charges the battery for a long time
 {
 digitalWrite(baterka,HIGH);                          // Hence, the charging relay is going to be switched on anyway
 delay(2000);
@@ -220,3 +224,39 @@ ISR(WDT_vect) {
 f_pcint0=1;  
 }
 
+void debug() {
+  sbi(ADCSRA,ADEN);  // Switch Analog to Digital converter ON
+  int battery = analogRead(A2);
+  for(int i = 0; i < 9; i++) {
+    if((battery - i) % 10 == 0) {
+      
+      digitalWrite(light, HIGH);
+      delay(i * 1000);
+      digitalWrite(light, LOW);
+      delay(1000);
+      battery = battery/10;
+    }
+  }
+  
+  for(int i = 0; i < 9; i++) {
+    if((battery - i) % 10 == 0) {
+      digitalWrite(light, HIGH);
+      delay(i * 1000);
+      digitalWrite(light, LOW);
+      delay(1000);
+      battery = battery/10;
+    }
+  }
+  
+  for(int i = 0; i < 9; i++) {
+    if((battery - i) % 10 == 0) {
+      digitalWrite(light, HIGH);
+      delay(i * 1000);
+      digitalWrite(light, LOW);
+      delay(1000);
+      }
+  }
+  
+  
+  cbi(ADCSRA,ADEN); // Switch Analog to Digital converter OFF
+}

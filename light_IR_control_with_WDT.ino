@@ -1,7 +1,8 @@
 /*
 This program is created by Andrej Klochan
 The program is controling the process of light bulb switching on and off, moreover, the charging of the battery is controlled by this program
-The last update of this program: 27.12.2018
+The last update of this program: 29.1.2019
+Decreased level of battery voltage in the program
 The last changes made in this program: recharging battery condition, if the battery is not fully charged after 2.5 hours.
 This changes are made in void charging() function
 Add void checkRelayStuck() function - checks, whether relay is not stuck after charging.
@@ -133,7 +134,7 @@ void charging()    //This part of program runs every 15minues
 //------------------------------------------------------
  int pin_baterka = digitalRead(0);
  int battery = analogRead(A2);
- if (battery <=690)  // If the battery has lower output voltage than 3.37V, starts charging
+ if (battery <=600)  // If the battery has lower output voltage than 3V, starts charging
 {
 digitalWrite(baterka,HIGH);        // So the charging relay is switched on
 bcounter=0;                        // And the bcounter is reseted
@@ -157,7 +158,7 @@ else {
   bcounter++;
   }
 
-if(charged == true && battery <= 820 && bcounter == 1) {
+if(charged == true && battery <= 780 && bcounter == 1) {
   charged = false;
   digitalWrite(baterka, HIGH);
   bcounter = 6;
@@ -174,7 +175,7 @@ void checkRelayStuck() {
   
   int pin_baterka = digitalRead(0);
   int battery = analogRead(A2);
-  if (battery>=840 && pin_baterka==LOW)    // This condition is fulfilled, if the charging relay is stuck, it means that AC charger charges the battery for a long time
+  if (battery>=810 && pin_baterka==LOW)    // This condition is fulfilled, if the charging relay is stuck, it means that AC charger charges the battery for a long time
 {
 digitalWrite(baterka,HIGH);                          // Hence, the charging relay is going to be switched on anyway
 delay(2000);

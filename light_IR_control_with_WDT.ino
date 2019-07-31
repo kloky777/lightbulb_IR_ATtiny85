@@ -1,7 +1,9 @@
 /*
 This program is created by Andrej Klochan
 The program is controling the process of light bulb switching on and off, moreover, the charging of the battery is controlled by this program
-The last update of this program: 29.1.2019
+The last update of this program: 31.7.2019
+Changed relay stuck voltage treshold
+Changed full charge voltage treshold
 Added debug function
 Changed battery charging conditions
 The last changes made in this program: recharging battery condition, if the battery is not fully charged after 2.5 hours.
@@ -162,7 +164,7 @@ else {
   bcounter++;
   }
 
-if(charged == true && battery <= 810 && bcounter == 1) {
+if(charged == true && battery <= 780 && bcounter == 1) {
   charged = false;
   digitalWrite(baterka, HIGH);
   bcounter = 6;
@@ -179,7 +181,7 @@ void checkRelayStuck() {
   
   int pin_baterka = digitalRead(0);
   int battery = analogRead(A2);
-  if (battery>=840 && pin_baterka==LOW)    // This condition is fulfilled, if the charging relay is stuck, it means that AC charger charges the battery for a long time
+  if (battery>=810 && pin_baterka==LOW)    // This condition is fulfilled, if the charging relay is stuck, it means that AC charger charges the battery for a long time
 {
 digitalWrite(baterka,HIGH);                          // Hence, the charging relay is going to be switched on anyway
 delay(2000);
